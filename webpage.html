@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Client Metrics Visualization</title>
+  <!-- Include Chart.js (for charts) and D3.js (for CSV data loading) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    /* Desktop-only styling for charts */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #controls { margin-bottom: 20px; }
+    fieldset { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    legend { font-weight: bold; }
+    .chart-container { width: 1000px; height: 300px; }
+  </style>
+</head>
+<body>
+  <h1>Multi-Client Training Metrics Dashboard</h1>
+  <!-- User interface for selecting combinations and repetitions -->
+  <div id="controls">
+    <fieldset id="comboSelect">
+      <legend>Select client combination(s):</legend>
+      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_2', 'guest_3')" checked> HDB Carpark, LTA, Housing, Grab</label><br>
+      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_2')" checked> HDB Carpark, LTA, Housing</label><br>
+      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_3')" checked> HDB Carpark, LTA, Grab</label><br>
+      <label><input type="checkbox" name="combo" value="host+('guest_2', 'guest_3')" checked> HDB Carpark, Housing, Grab</label><br>
+    </fieldset>
+    <fieldset id="repSelect">
+      <legend>Select repetition(s):</legend>
+      <label><input type="checkbox" name="rep" value="1" checked> Rep 1</label>
+      <label><input type="checkbox" name="rep" value="2" checked> Rep 2</label>
+      <label><input type="checkbox" name="rep" value="3" checked> Rep 3</label>
+      <label><input type="checkbox" name="rep" value="4"> Rep 4</label>
+      <label><input type="checkbox" name="rep" value="5"> Rep 5</label>
+      <label><input type="checkbox" name="rep" value="6"> Rep 6</label>
+      <label><input type="checkbox" name="rep" value="7"> Rep 7</label>
+      <label><input type="checkbox" name="rep" value="8"> Rep 8</label>
+      <label><input type="checkbox" name="rep" value="9"> Rep 9</label>
+      <label><input type="checkbox" name="rep" value="10"> Rep 10</label>
+    </fieldset>
+  </div>
+  <!-- Containers for the three charts -->
+  <canvas id="trainingLossChart" class="chart-container"></canvas>
+  <canvas id="testMSEChart" class="chart-container"></canvas>
+  <canvas id="contribChart" class="chart-container"></canvas>
+  <script>
+    // Configuration: path to CSV files and number of repetitions to load
+    const dataFolder = './';      // Folder where rep1.csv ... rep10.csv are stored (relative to this HTML file)
+    const maxReps = 10;           // Maximum number of rep files to attempt loading
+    
+    // Mapping of client keys to human-readable names for labels
+    const clientNames = {
+      host: "HDB Carpark",
+      guest_1: "LTA",
+      guest_2: "Housing",
+      guest_3: "Grab"
+    };
+    // Color palettes for combinations and clients (for consistent line colors)
+    const comboColors = {
+      "All": "#1f77b4",            // All clients included (blue)
+      "No LTA": "#d62728",         // Missing LTA (red)
+      "No Housing": "#2ca02c",     // Missing Housing (green)
+      "No Grab": "#ff7f0e"         // Missing Grab (orange)
+    };
+    const clientColors = {
+      host: "#000000",             // HDB Carpark (host) - black
+      guest_1: "#d62728",          // LTA - red
+      guest_2: "#2ca02c",          // Housing - green
+      guest_3: "#ff7f0e"           // Grab - orange
+    };
+    
+    // Data storage: dataByRep[repNumber][experimentName] = array of data points (rows)
+    const dataByRep = {};
+    
+    // Helper to determine scenario label (which clients included) from experiment string
+    function getScenarioName(exp) {
+      const countGuests = (exp.match(/guest_/g) || []).length;
+      if (countGuests === 3) return "All";
+      // If one guest is missing:
+      let missingKey = null;
+      ["guest_1", "guest_2", "guest_3"].forEach(g => {
+        if (!exp.includes(g)) missingKey = g;
+      });
+      if (missingKey) return "No " + clientNames[missingKey];
+      return exp; // Fallback (in case of an unexpected pattern)
+    }
+    
+    // Load all CSV files (rep1.csv to rep10.csv) asynchronously
+    const loadPromises = [];
+    for (let rep = 1; rep <= maxReps; rep++) {
+      const filePath = dataFolder + "rep" + rep + ".csv";
+      loadPromises.push(
+        d3.csv(filePath).then(rows => {
+          // Only proceed if data was loaded successfully
+          dataByRep[rep] = {};
+          rows.forEach(row => {
+            // Convert numeric fields from strings to numbers
+            row.round = +row.round;
+            row.training_loss = +row.training_loss;
+            row.test_mse = +row.test_mse;
+            row.ablation_host = parseFloat(row.ablation_host);
+            row.ablation_guest_1 = parseFloat(row.ablation_guest_1);
+            row.ablation_guest_2 = parseFloat(row.ablation_guest_2);
+            row.ablation_guest_3 = parseFloat(row.ablation_guest_3);
+            // Group data by experiment (client combination)
+            const exp = row.experiment;
+            if (!dataByRep[rep][exp]) {
+              dataByRep[rep][exp] = [];
+            }
+            dataByRep[rep][exp].push(row);
+          });
+          // Ensure rounds are sorted in ascending order for each experiment
+          Object.keys(dataByRep[rep]).forEach(exp => {
+            dataByRep[rep][exp].sort((a, b) => a.round - b.round);
+          });
+        }).catch(error => {
+          // If file not found or cannot be loaded, do nothing (skip this rep number)
+        })
+      );
+    }
+    
+    // Once all files are loaded (or attempted), initialize charts
+    Promise.all(loadPromises).then(() => {
+      // Set up Chart.js line charts for Training Loss, Test MSE, and Client Contribution
+      const ctx1 = document.getElementById('trainingLossChart').getContext('2d');
+      const ctx2 = document.getElementById('testMSEChart').getContext('2d');
+      const ctx3 = document.getElementById('contribChart').getContext('2d');
+      
+      // Common chart options for all three charts (linear x-axis for rounds, no legend, hover effects)
+      const commonOptions = {
+        scales: {
+          x: {
+            type: 'linear',
+            title: { display: true, text: 'Round' }
+          },
+          y: {
+            title: { display: true, text: '' } // will set individually per chart
+          }
+        },
+        plugins: {
+          legend: { display: false } // Hide legend since we use custom UI for selection
+        },
+        // Custom hover callback to highlight the hovered line and show client label
+        onHover: (event, activeElements, chart) => {
+          if (activeElements.length === 0) {
+            // No line hovered: restore all lines to full opacity
+            chart.data.datasets.forEach(dataset => {
+              if (typeof dataset.borderColor === 'string') {
+                dataset.borderColor = dataset.borderColor.length === 9 ? dataset.borderColor.slice(0, -2) : dataset.borderColor;
+                dataset.backgroundColor = dataset.backgroundColor.length === 9 ? dataset.backgroundColor.slice(0, -2) : dataset.backgroundColor;
+              }
+            });
+            chart.update();
+            return;
+          }
+          // One line is hovered: dim all other lines by adding transparency
+          const hoveredIndex = activeElements[0].datasetIndex;
+          chart.data.datasets.forEach((dataset, idx) => {
+            if (typeof dataset.borderColor === 'string') {
+              if (idx === hoveredIndex) {
+                // Highlight hovered line (ensure no transparency)
+                dataset.borderColor = dataset.borderColor.length === 9 ? dataset.borderColor.slice(0, -2) : dataset.borderColor;
+                dataset.backgroundColor = dataset.backgroundColor.length === 9 ? dataset.backgroundColor.slice(0, -2) : dataset.backgroundColor;
+              } else {
+                // Add transparency (format '4D' hex = 30% opacity) to non-hovered lines
+                if (dataset.borderColor.length !== 9) {
+                  dataset.borderColor += '4D';
+                  dataset.backgroundColor += '4D';
+                }
+              }
+            }
+          });
+          chart.update();
+        }
+      };
+      
+      // Create the three charts with initial empty data and appropriate titles
+      const trainingLossChart = new Chart(ctx1, {
+        type: 'line',
+        data: { datasets: [] },
+        options: {
+          ...commonOptions,
+          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Training Loss' } } }
+        }
+      });
+      const testMSEChart = new Chart(ctx2, {
+        type: 'line',
+        data: { datasets: [] },
+        options: {
+          ...commonOptions,
+          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Test MSE' } } }
+        }
+      });
+      const contribChart = new Chart(ctx3, {
+        type: 'line',
+        data: { datasets: [] },
+        options: {
+          ...commonOptions,
+          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Client Contribution (MSE Increase)' } } }
+        }
+      });
+      
+      // Function to refresh chart data based on current selections
+      function updateCharts() {
+        // Determine which combinations and reps are selected
+        const selectedCombos = Array.from(document.querySelectorAll('input[name="combo"]:checked')).map(cb => cb.value);
+        const selectedReps = Array.from(document.querySelectorAll('input[name="rep"]:checked')).map(cb => parseInt(cb.value));
+        
+        // Prepare new datasets for Training Loss and Test MSE charts
+        const newLossDatasets = [];
+        const newMseDatasets = [];
+        selectedCombos.forEach(exp => {
+          const scenarioLabel = getScenarioName(exp);
+          selectedReps.forEach(rep => {
+            if (dataByRep[rep] && dataByRep[rep][exp]) {
+              const dataRows = dataByRep[rep][exp];
+              // Build data points for this line
+              const lossPoints = dataRows.map(row => ({ x: row.round, y: row.training_loss }));
+              const msePoints = dataRows.map(row => ({ x: row.round, y: row.test_mse }));
+              // Determine line color and label
+              const color = comboColors[scenarioLabel] || '#000000';
+              const lineLabel = scenarioLabel + " (Rep " + rep + ")";
+              // Create dataset objects
+              newLossDatasets.push({
+                label: lineLabel,
+                data: lossPoints,
+                borderColor: color,
+                backgroundColor: color,
+                borderWidth: 2,
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHitRadius: 10
+              });
+              newMseDatasets.push({
+                label: lineLabel,
+                data: msePoints,
+                borderColor: color,
+                backgroundColor: color,
+                borderWidth: 2,
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHitRadius: 10
+              });
+            }
+          });
+        });
+        
+        // Prepare new datasets for Client Contribution chart
+        const newContribDatasets = [];
+        selectedCombos.forEach(exp => {
+          const scenarioLabel = getScenarioName(exp);
+          selectedReps.forEach(rep => {
+            if (dataByRep[rep] && dataByRep[rep][exp]) {
+              const dataRows = dataByRep[rep][exp];
+              // For each client in this combination, use its ablation values over rounds
+              ["host", "guest_1", "guest_2", "guest_3"].forEach(clientKey => {
+                // Only include if that client was part of this experiment (i.e., ablation value exists)
+                const firstVal = dataRows[0]["ablation_" + clientKey];
+                if (!isNaN(firstVal)) {
+                  const contribPoints = dataRows.map(row => ({ x: row.round, y: row["ablation_" + clientKey] }));
+                  const clientLabel = clientNames[clientKey] + " (" + scenarioLabel + ", Rep " + rep + ")";
+                  const color = clientColors[clientKey] || '#000000';
+                  newContribDatasets.push({
+                    label: clientLabel,
+                    data: contribPoints,
+                    borderColor: color,
+                    backgroundColor: color,
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    pointHitRadius: 10
+                  });
+                }
+              });
+            }
+          });
+        });
+        
+        // Update each chart's datasets and re-render
+        trainingLossChart.data.datasets = newLossDatasets;
+        testMSEChart.data.datasets = newMseDatasets;
+        contribChart.data.datasets = newContribDatasets;
+        trainingLossChart.update();
+        testMSEChart.update();
+        contribChart.update();
+      }
+      
+      // Attach event listeners to checkboxes to trigger chart updates on selection change
+      document.querySelectorAll('input[name="combo"]').forEach(cb => {
+        cb.addEventListener('change', updateCharts);
+      });
+      document.querySelectorAll('input[name="rep"]').forEach(cb => {
+        cb.addEventListener('change', updateCharts);
+      });
+      
+      // Initial plot with default selections
+      updateCharts();
+    });
+  </script>
+</body>
+</html>
