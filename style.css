@@ -1,0 +1,200 @@
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #F5F7FA;
+  color: #333;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Top Navigation */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFF;
+  border-bottom: 4px solid #E05A1F;
+  padding: 0 24px;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+nav .logo {
+  display: flex;
+  align-items: center;
+}
+nav .logo img {
+  height: 36px;
+  margin-right: 12px;
+}
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+nav li {
+  margin: 0 16px;
+}
+nav a {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #333;
+  padding: 8px;
+}
+nav a:hover {
+  color: #E05A1F;
+}
+
+/* Push the rest of the page down so it’s not hidden under the fixed navbar */
+.sidebar,
+.content {
+  margin-top: 60px;  /* same as nav height */
+}
+
+/* Layout */
+.main-content {
+  display: flex;
+}
+
+/* Sidebar (Controls) */
+.sidebar {
+  width: 260px;
+  background: #FFF;
+  border-right: 4px solid #E05A1F;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  padding: 24px;
+}
+.sidebar h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #CC0055;
+  font-size: 20px;
+}
+#controls fieldset {
+  border: 1px solid #DDD;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #FAFAFA;
+}
+#controls legend {
+  font-weight: 600;
+  padding: 0 4px;
+}
+#controls label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+#controls input {
+  margin-right: 6px;
+}
+#controls .host-label {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+#controls .host-label strong {
+  color: #000;
+}
+
+/* Content Area */
+.content {
+  flex: 1;
+  padding: 24px;
+}
+.card {
+  background: #FFF;
+  border: 1px solid #ECECEC;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #1F456E;
+}
+
+/* Metric selector */
+.metric-selector {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.metric-selector p.intro {
+  margin-bottom: 8px;
+  color: #555;
+  line-height: 1.5;
+}
+.metric-selector label {
+  margin-right: 8px;
+  font-weight: 600;
+}
+.metric-description {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Chart Containers */
+.metric-container {
+  display: none;
+}
+.metric-container.active {
+  display: block;
+}
+.chart-container {
+  width: 100%;
+  max-width: 100%;
+  height: 250px; /* Reduced height to fit */
+  margin-bottom: 24px;
+  position: relative; /* For Chart.js responsive resizing */
+}
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Comparison Section */
+#comparison .controls-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+#comparison .controls-inline label {
+  font-size: 14px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+#comparison .controls-inline select {
+  margin-left: 4px;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+#comparison .description {
+  margin-bottom: 12px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Ensure each section heading is visible below the fixed navbar */
+#about,
+#experiment,
+#comparison,
+#data-generation {
+  scroll-margin-top: 65px; /* A few pixels above nav height */
+}

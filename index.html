@@ -2,304 +2,152 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Client Metrics Visualization</title>
-  <!-- Include Chart.js (for charts) and D3.js (for CSV data loading) -->
+  <title>Federated Learning Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js and D3.js (from CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>
-  <style>
-    /* Desktop-only styling for charts */
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    #controls { margin-bottom: 20px; }
-    fieldset { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    legend { font-weight: bold; }
-    .chart-container { width: 1000px; height: 300px; }
-  </style>
 </head>
 <body>
-  <h1>Multi-Client Training Metrics Dashboard</h1>
-  <!-- User interface for selecting combinations and repetitions -->
-  <div id="controls">
-    <fieldset id="comboSelect">
-      <legend>Select client combination(s):</legend>
-      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_2', 'guest_3')" checked> HDB Carpark, LTA, Housing, Grab</label><br>
-      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_2')" checked> HDB Carpark, LTA, Housing</label><br>
-      <label><input type="checkbox" name="combo" value="host+('guest_1', 'guest_3')" checked> HDB Carpark, LTA, Grab</label><br>
-      <label><input type="checkbox" name="combo" value="host+('guest_2', 'guest_3')" checked> HDB Carpark, Housing, Grab</label><br>
-    </fieldset>
-    <fieldset id="repSelect">
-      <legend>Select repetition(s):</legend>
-      <label><input type="checkbox" name="rep" value="1" checked> Rep 1</label>
-      <label><input type="checkbox" name="rep" value="2" checked> Rep 2</label>
-      <label><input type="checkbox" name="rep" value="3" checked> Rep 3</label>
-      <label><input type="checkbox" name="rep" value="4"> Rep 4</label>
-      <label><input type="checkbox" name="rep" value="5"> Rep 5</label>
-      <label><input type="checkbox" name="rep" value="6"> Rep 6</label>
-      <label><input type="checkbox" name="rep" value="7"> Rep 7</label>
-      <label><input type="checkbox" name="rep" value="8"> Rep 8</label>
-      <label><input type="checkbox" name="rep" value="9"> Rep 9</label>
-      <label><input type="checkbox" name="rep" value="10"> Rep 10</label>
-    </fieldset>
+  <!-- Top Navigation -->
+  <nav>
+    <div class="logo">
+      <img src="res/img/SMU_logo.jpg" alt="SMU Logo" />
+      <span>Singapore Management University</span>
+    </div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#experiment">Federated Learning Experiment</a></li>
+      <li><a href="#comparison">Comparison with Individual ML</a></li>
+      <li><a href="#data-generation">Data Generation</a></li>
+    </ul>
+  </nav>
+
+  <div class="main-content">
+    <!-- Sidebar: Controls -->
+    <aside class="sidebar">
+      <h2>Controls</h2>
+      <div id="controls">
+        <!-- Host always included -->
+        <fieldset id="clientSelect">
+          <legend>Clients</legend>
+          <p class="host-label"><strong>HDB Carpark (Host)</strong> — always included</p>
+          <label><input type="checkbox" name="guest" value="guest_1" checked /> LTA</label>
+          <label><input type="checkbox" name="guest" value="guest_2" checked /> HDB Housing</label>
+          <label><input type="checkbox" name="guest" value="guest_3" checked /> Grab</label>
+        </fieldset>
+        <fieldset id="repSelect">
+          <legend>Repetitions</legend>
+          <label><input type="checkbox" name="rep" value="1" checked /> Rep 1</label>
+          <label><input type="checkbox" name="rep" value="2"  /> Rep 2</label>
+          <label><input type="checkbox" name="rep" value="3"  /> Rep 3</label>
+          <label><input type="checkbox" name="rep" value="4" /> Rep 4</label>
+          <label><input type="checkbox" name="rep" value="5" /> Rep 5</label>
+          <label><input type="checkbox" name="rep" value="6" /> Rep 6</label>
+          <label><input type="checkbox" name="rep" value="7" /> Rep 7</label>
+          <label><input type="checkbox" name="rep" value="8" /> Rep 8</label>
+          <label><input type="checkbox" name="rep" value="9" /> Rep 9</label>
+          <label><input type="checkbox" name="rep" value="10" /> Rep 10</label>
+        </fieldset>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="content">
+      <!-- About Card -->
+      <div id="about" class="card">
+        <h3>About</h3>
+        <p>
+          Federated Learning (FL) is an advanced machine‐learning paradigm in which multiple parties (clients) collaborate to train a shared model without exchanging their raw data. Instead of centralizing all data in a single repository, each client retains its own records locally and transmits only model updates (gradients or parameter deltas) to a coordinating server. This ensures that sensitive information remains within each organization, while still enabling the development of a robust global model that benefits from the unique insights of every participant.
+        </p>
+        <p>
+          In Singapore, HDB carpark capacity is generally sufficient at the national level, but local shortages can occur during peak hours, weekends, or special events. Although the HDB maintains aggregate occupancy statistics, relying on that data alone often yields suboptimal demand forecasts. By incorporating additional information from the Land Transport Authority (LTA), private ride‐hailing services such as Grab, and housing‐development agencies, predictive accuracy can improve significantly. However, each of these stakeholders are understandably hesitant to share raw records due to commercial sensitivities, privacy regulations, and data‐protection requirements.
+        </p>
+        <p>
+          Federated Learning addresses this challenge directly. By training a joint model across HDB, LTA, housing‐developers, and Grab without exposing raw datasets, each organization can contribute valuable features (e.g., entry/exit logs, mobility patterns, housing‐occupancy rates) in a privacy‐preserving manner. The coordinating server aggregates these parameter updates and redistributes an enhanced global model, ensuring that no sensitive data ever leaves a participant’s secure environment. As a result, the final model can accurately predict parking demand at a local (estate) level—capturing both national “surplus” data and local “shortage” dynamics—while fully respecting each organization’s privacy constraints.
+        </p>
+        <p>
+          Feel free to experiment with different client setups by toggling <strong>LTA</strong>, <strong>HDB Housing</strong>, and <strong>Grab</strong> in the Controls panel. Each combination represents a distinct federated configuration—observe how the global Test MSE and individual Client Contributions change as you include or exclude specific partners across your selected repetitions.
+        </p>
+      </div>
+
+      <!-- Experiment Card -->
+      <div id="experiment" class="card">
+        <h3>Federated Learning Experiment Metrics</h3>
+        
+        <!-- Introduction paragraph for all metrics -->
+        <div class="metric-selector">
+          <p class="intro">
+            Below are three key metrics to help non‐technical stakeholders understand model performance:
+            <ul>
+              <li><strong>Training Loss:</strong> Indicates how well the model fits the data it was trained on. Lower values signify better fit.</li>
+              <li><strong>Test MSE:</strong> Measures prediction error on unseen data. Lower values mean the model generalizes more accurately.</li>
+              <li><strong>Client Contribution:</strong> Illustrates the relative impact each participant (HDB Carpark, LTA, HDB Housing, Grab) has on overall model performance. Larger values indicate greater contribution.</li>
+            </ul>
+          </p>
+          <label for="metricSelect">Select Metric:</label>
+          <select id="metricSelect">
+            <option value="trainingLoss">Training Loss</option>
+            <option value="testMSE">Test MSE</option>
+            <option value="contrib">Client Contribution</option>
+          </select>
+          <p id="metricDescription" class="metric-description">
+            Shows how well the model is fitting the training data; lower values indicate a better fit.
+          </p>
+        </div>
+
+        <!-- Containers for each chart; only one is visible at a time -->
+        <div id="trainingLossContainer" class="metric-container active">
+          <div class="chart-container">
+            <canvas id="trainingLossChart"></canvas>
+          </div>
+        </div>
+        <div id="testMSEContainer" class="metric-container">
+          <div class="chart-container">
+            <canvas id="testMSEChart"></canvas>
+          </div>
+        </div>
+        <div id="contribContainer" class="metric-container">
+          <div class="chart-container">
+            <canvas id="contribChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison with Individual Machine Learning Card -->
+      <div id="comparison" class="card">
+        <h3>Comparison with Individual Machine Learning</h3>
+        <p class="description">
+          In this comparison, each client is provided with the ground‐truth parking demand to simulate full‐data performance (blue), and a centralized model (identical architecture) is trained on the same ground‐truth data. This highlights how individual data sources and a fully centralized approach perform relative to one another, helping us understand the potential gains from federated learning.
+        </p>
+        <div class="controls-inline">
+          <label for="indClientSelect">
+            Client:
+            <select id="indClientSelect">
+              <!-- Populated dynamically -->
+            </select>
+          </label>
+          <label for="indRepSelect">
+            Trial:
+            <select id="indRepSelect">
+              <!-- Populated dynamically -->
+            </select>
+          </label>
+        </div>
+        <div class="chart-container">
+          <canvas id="indivChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Data Generation Card -->
+      <div id="data-generation" class="card">
+        <h3>Data Generation</h3>
+        <p>Details and scripts for generating the federated learning datasets will appear here.</p>
+      </div>
+    </section>
   </div>
-  <!-- Containers for the three charts -->
-  <canvas id="trainingLossChart" class="chart-container"></canvas>
-  <canvas id="testMSEChart" class="chart-container"></canvas>
-  <canvas id="contribChart" class="chart-container"></canvas>
-  <script>
-    // Configuration: path to CSV files and number of repetitions to load
-    const dataFolder = './';      // Folder where rep1.csv ... rep10.csv are stored (relative to this HTML file)
-    const maxReps = 10;           // Maximum number of rep files to attempt loading
-    
-    // Mapping of client keys to human-readable names for labels
-    const clientNames = {
-      host: "HDB Carpark",
-      guest_1: "LTA",
-      guest_2: "Housing",
-      guest_3: "Grab"
-    };
-    // Color palettes for combinations and clients (for consistent line colors)
-    const comboColors = {
-      "All": "#1f77b4",            // All clients included (blue)
-      "No LTA": "#d62728",         // Missing LTA (red)
-      "No Housing": "#2ca02c",     // Missing Housing (green)
-      "No Grab": "#ff7f0e"         // Missing Grab (orange)
-    };
-    const clientColors = {
-      host: "#000000",             // HDB Carpark (host) - black
-      guest_1: "#d62728",          // LTA - red
-      guest_2: "#2ca02c",          // Housing - green
-      guest_3: "#ff7f0e"           // Grab - orange
-    };
-    
-    // Data storage: dataByRep[repNumber][experimentName] = array of data points (rows)
-    const dataByRep = {};
-    
-    // Helper to determine scenario label (which clients included) from experiment string
-    function getScenarioName(exp) {
-      const countGuests = (exp.match(/guest_/g) || []).length;
-      if (countGuests === 3) return "All";
-      // If one guest is missing:
-      let missingKey = null;
-      ["guest_1", "guest_2", "guest_3"].forEach(g => {
-        if (!exp.includes(g)) missingKey = g;
-      });
-      if (missingKey) return "No " + clientNames[missingKey];
-      return exp; // Fallback (in case of an unexpected pattern)
-    }
-    
-    // Load all CSV files (rep1.csv to rep10.csv) asynchronously
-    const loadPromises = [];
-    for (let rep = 1; rep <= maxReps; rep++) {
-      const filePath = dataFolder + "rep" + rep + ".csv";
-      loadPromises.push(
-        d3.csv(filePath).then(rows => {
-          // Only proceed if data was loaded successfully
-          dataByRep[rep] = {};
-          rows.forEach(row => {
-            // Convert numeric fields from strings to numbers
-            row.round = +row.round;
-            row.training_loss = +row.training_loss;
-            row.test_mse = +row.test_mse;
-            row.ablation_host = parseFloat(row.ablation_host);
-            row.ablation_guest_1 = parseFloat(row.ablation_guest_1);
-            row.ablation_guest_2 = parseFloat(row.ablation_guest_2);
-            row.ablation_guest_3 = parseFloat(row.ablation_guest_3);
-            // Group data by experiment (client combination)
-            const exp = row.experiment;
-            if (!dataByRep[rep][exp]) {
-              dataByRep[rep][exp] = [];
-            }
-            dataByRep[rep][exp].push(row);
-          });
-          // Ensure rounds are sorted in ascending order for each experiment
-          Object.keys(dataByRep[rep]).forEach(exp => {
-            dataByRep[rep][exp].sort((a, b) => a.round - b.round);
-          });
-        }).catch(error => {
-          // If file not found or cannot be loaded, do nothing (skip this rep number)
-        })
-      );
-    }
-    
-    // Once all files are loaded (or attempted), initialize charts
-    Promise.all(loadPromises).then(() => {
-      // Set up Chart.js line charts for Training Loss, Test MSE, and Client Contribution
-      const ctx1 = document.getElementById('trainingLossChart').getContext('2d');
-      const ctx2 = document.getElementById('testMSEChart').getContext('2d');
-      const ctx3 = document.getElementById('contribChart').getContext('2d');
-      
-      // Common chart options for all three charts (linear x-axis for rounds, no legend, hover effects)
-      const commonOptions = {
-        scales: {
-          x: {
-            type: 'linear',
-            title: { display: true, text: 'Round' }
-          },
-          y: {
-            title: { display: true, text: '' } // will set individually per chart
-          }
-        },
-        plugins: {
-          legend: { display: false } // Hide legend since we use custom UI for selection
-        },
-        // Custom hover callback to highlight the hovered line and show client label
-        onHover: (event, activeElements, chart) => {
-          if (activeElements.length === 0) {
-            // No line hovered: restore all lines to full opacity
-            chart.data.datasets.forEach(dataset => {
-              if (typeof dataset.borderColor === 'string') {
-                dataset.borderColor = dataset.borderColor.length === 9 ? dataset.borderColor.slice(0, -2) : dataset.borderColor;
-                dataset.backgroundColor = dataset.backgroundColor.length === 9 ? dataset.backgroundColor.slice(0, -2) : dataset.backgroundColor;
-              }
-            });
-            chart.update();
-            return;
-          }
-          // One line is hovered: dim all other lines by adding transparency
-          const hoveredIndex = activeElements[0].datasetIndex;
-          chart.data.datasets.forEach((dataset, idx) => {
-            if (typeof dataset.borderColor === 'string') {
-              if (idx === hoveredIndex) {
-                // Highlight hovered line (ensure no transparency)
-                dataset.borderColor = dataset.borderColor.length === 9 ? dataset.borderColor.slice(0, -2) : dataset.borderColor;
-                dataset.backgroundColor = dataset.backgroundColor.length === 9 ? dataset.backgroundColor.slice(0, -2) : dataset.backgroundColor;
-              } else {
-                // Add transparency (format '4D' hex = 30% opacity) to non-hovered lines
-                if (dataset.borderColor.length !== 9) {
-                  dataset.borderColor += '4D';
-                  dataset.backgroundColor += '4D';
-                }
-              }
-            }
-          });
-          chart.update();
-        }
-      };
-      
-      // Create the three charts with initial empty data and appropriate titles
-      const trainingLossChart = new Chart(ctx1, {
-        type: 'line',
-        data: { datasets: [] },
-        options: {
-          ...commonOptions,
-          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Training Loss' } } }
-        }
-      });
-      const testMSEChart = new Chart(ctx2, {
-        type: 'line',
-        data: { datasets: [] },
-        options: {
-          ...commonOptions,
-          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Test MSE' } } }
-        }
-      });
-      const contribChart = new Chart(ctx3, {
-        type: 'line',
-        data: { datasets: [] },
-        options: {
-          ...commonOptions,
-          scales: { x: commonOptions.scales.x, y: { title: { display: true, text: 'Client Contribution (MSE Increase)' } } }
-        }
-      });
-      
-      // Function to refresh chart data based on current selections
-      function updateCharts() {
-        // Determine which combinations and reps are selected
-        const selectedCombos = Array.from(document.querySelectorAll('input[name="combo"]:checked')).map(cb => cb.value);
-        const selectedReps = Array.from(document.querySelectorAll('input[name="rep"]:checked')).map(cb => parseInt(cb.value));
-        
-        // Prepare new datasets for Training Loss and Test MSE charts
-        const newLossDatasets = [];
-        const newMseDatasets = [];
-        selectedCombos.forEach(exp => {
-          const scenarioLabel = getScenarioName(exp);
-          selectedReps.forEach(rep => {
-            if (dataByRep[rep] && dataByRep[rep][exp]) {
-              const dataRows = dataByRep[rep][exp];
-              // Build data points for this line
-              const lossPoints = dataRows.map(row => ({ x: row.round, y: row.training_loss }));
-              const msePoints = dataRows.map(row => ({ x: row.round, y: row.test_mse }));
-              // Determine line color and label
-              const color = comboColors[scenarioLabel] || '#000000';
-              const lineLabel = scenarioLabel + " (Rep " + rep + ")";
-              // Create dataset objects
-              newLossDatasets.push({
-                label: lineLabel,
-                data: lossPoints,
-                borderColor: color,
-                backgroundColor: color,
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                pointHitRadius: 10
-              });
-              newMseDatasets.push({
-                label: lineLabel,
-                data: msePoints,
-                borderColor: color,
-                backgroundColor: color,
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                pointHitRadius: 10
-              });
-            }
-          });
-        });
-        
-        // Prepare new datasets for Client Contribution chart
-        const newContribDatasets = [];
-        selectedCombos.forEach(exp => {
-          const scenarioLabel = getScenarioName(exp);
-          selectedReps.forEach(rep => {
-            if (dataByRep[rep] && dataByRep[rep][exp]) {
-              const dataRows = dataByRep[rep][exp];
-              // For each client in this combination, use its ablation values over rounds
-              ["host", "guest_1", "guest_2", "guest_3"].forEach(clientKey => {
-                // Only include if that client was part of this experiment (i.e., ablation value exists)
-                const firstVal = dataRows[0]["ablation_" + clientKey];
-                if (!isNaN(firstVal)) {
-                  const contribPoints = dataRows.map(row => ({ x: row.round, y: row["ablation_" + clientKey] }));
-                  const clientLabel = clientNames[clientKey] + " (" + scenarioLabel + ", Rep " + rep + ")";
-                  const color = clientColors[clientKey] || '#000000';
-                  newContribDatasets.push({
-                    label: clientLabel,
-                    data: contribPoints,
-                    borderColor: color,
-                    backgroundColor: color,
-                    borderWidth: 2,
-                    fill: false,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    pointHitRadius: 10
-                  });
-                }
-              });
-            }
-          });
-        });
-        
-        // Update each chart's datasets and re-render
-        trainingLossChart.data.datasets = newLossDatasets;
-        testMSEChart.data.datasets = newMseDatasets;
-        contribChart.data.datasets = newContribDatasets;
-        trainingLossChart.update();
-        testMSEChart.update();
-        contribChart.update();
-      }
-      
-      // Attach event listeners to checkboxes to trigger chart updates on selection change
-      document.querySelectorAll('input[name="combo"]').forEach(cb => {
-        cb.addEventListener('change', updateCharts);
-      });
-      document.querySelectorAll('input[name="rep"]').forEach(cb => {
-        cb.addEventListener('change', updateCharts);
-      });
-      
-      // Initial plot with default selections
-      updateCharts();
-    });
-  </script>
+
+  <!-- External JS -->
+  <script src="script.js"></script>
 </body>
 </html>
