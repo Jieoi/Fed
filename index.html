@@ -2,152 +2,153 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Federated Learning Dashboard</title>
+  <!-- REQUIRED for responsive scaling on mobile/desktop -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Federated Learning Dashboard – Overview</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Chart.js and D3.js (from CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
+  <!-- Skip Link for Screen-Reader / Keyboard Users -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
   <!-- Top Navigation -->
   <nav>
-    <div class="logo">
-      <img src="res/img/SMU_logo.jpg" alt="SMU Logo" />
-      <span>Singapore Management University</span>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="res/img/SMU_logo.jpg" alt="SMU Logo" class="logo-img" />
+        <span>Singapore Management University</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">ABOUT</a></li>
+        <li><a href="metrics.html#experiment">FEDERATED LEARNING EXPERIMENT</a></li>
+        <li><a href="metrics.html#comparison">COMPARISON WITH INDIVIDUAL ML</a></li>
+        <li><a href="index.html#data-generation">DATA GENERATION</a></li>
+      </ul>
     </div>
-    <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#experiment">Federated Learning Experiment</a></li>
-      <li><a href="#comparison">Comparison with Individual ML</a></li>
-      <li><a href="#data-generation">Data Generation</a></li>
-    </ul>
   </nav>
 
-  <div class="main-content">
-    <!-- Sidebar: Controls -->
-    <aside class="sidebar">
-      <h2>Controls</h2>
-      <div id="controls">
-        <!-- Host always included -->
-        <fieldset id="clientSelect">
-          <legend>Clients</legend>
-          <p class="host-label"><strong>HDB Carpark (Host)</strong> — always included</p>
-          <label><input type="checkbox" name="guest" value="guest_1" checked /> LTA</label>
-          <label><input type="checkbox" name="guest" value="guest_2" checked /> HDB Housing</label>
-          <label><input type="checkbox" name="guest" value="guest_3" checked /> Grab</label>
-        </fieldset>
-        <fieldset id="repSelect">
-          <legend>Repetitions</legend>
-          <label><input type="checkbox" name="rep" value="1" checked /> Rep 1</label>
-          <label><input type="checkbox" name="rep" value="2"  /> Rep 2</label>
-          <label><input type="checkbox" name="rep" value="3"  /> Rep 3</label>
-          <label><input type="checkbox" name="rep" value="4" /> Rep 4</label>
-          <label><input type="checkbox" name="rep" value="5" /> Rep 5</label>
-          <label><input type="checkbox" name="rep" value="6" /> Rep 6</label>
-          <label><input type="checkbox" name="rep" value="7" /> Rep 7</label>
-          <label><input type="checkbox" name="rep" value="8" /> Rep 8</label>
-          <label><input type="checkbox" name="rep" value="9" /> Rep 9</label>
-          <label><input type="checkbox" name="rep" value="10" /> Rep 10</label>
-        </fieldset>
-      </div>
+  <div class="main-content" id="main">
+    <!-- Empty sidebar (preserves layout) -->
+    <aside class="sidebar" id="sidebar" aria-label="Empty sidebar">
+      <!-- no controls here -->
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main content area -->
     <section class="content">
       <!-- About Card -->
       <div id="about" class="card">
         <h3>About</h3>
         <p>
-          Federated Learning (FL) is an advanced machine‐learning paradigm in which multiple parties (clients) collaborate to train a shared model without exchanging their raw data. Instead of centralizing all data in a single repository, each client retains its own records locally and transmits only model updates (gradients or parameter deltas) to a coordinating server. This ensures that sensitive information remains within each organization, while still enabling the development of a robust global model that benefits from the unique insights of every participant.
+          Federated Learning (FL) is an advanced machine‐learning paradigm in which multiple
+          parties (clients) collaborate to train a shared model without exchanging their raw data.
+          Instead of centralizing all data in a single repository, each client retains its own
+          records locally and transmits only model updates (gradients or parameter deltas) to a
+          coordinating server. This ensures that sensitive information remains within each
+          organization, while still enabling the development of a robust global model that benefits
+          from the unique insights of every participant.
         </p>
+          </br>
         <p>
-          In Singapore, HDB carpark capacity is generally sufficient at the national level, but local shortages can occur during peak hours, weekends, or special events. Although the HDB maintains aggregate occupancy statistics, relying on that data alone often yields suboptimal demand forecasts. By incorporating additional information from the Land Transport Authority (LTA), private ride‐hailing services such as Grab, and housing‐development agencies, predictive accuracy can improve significantly. However, each of these stakeholders are understandably hesitant to share raw records due to commercial sensitivities, privacy regulations, and data‐protection requirements.
+          In Singapore, HDB carpark capacity is generally sufficient at the national level, but
+          local shortages can occur during peak hours, weekends, or special events. Although the HDB
+          maintains aggregate occupancy statistics, relying on that data alone often yields
+          suboptimal demand forecasts. By incorporating additional information from the Land
+          Transport Authority (LTA), private ride‐hailing services such as Grab, and
+          housing‐development agencies, predictive accuracy can improve significantly. However, each
+          of these stakeholders are understandably hesitant to share raw records due to commercial
+          sensitivities, privacy regulations, and data‐protection requirements.
         </p>
+        <img src="res/img/FL_Clients.png" alt="clients_contribute_to_learning" />
+                  </br>
         <p>
-          Federated Learning addresses this challenge directly. By training a joint model across HDB, LTA, housing‐developers, and Grab without exposing raw datasets, each organization can contribute valuable features (e.g., entry/exit logs, mobility patterns, housing‐occupancy rates) in a privacy‐preserving manner. The coordinating server aggregates these parameter updates and redistributes an enhanced global model, ensuring that no sensitive data ever leaves a participant’s secure environment. As a result, the final model can accurately predict parking demand at a local (estate) level—capturing both national “surplus” data and local “shortage” dynamics—while fully respecting each organization’s privacy constraints.
+          Federated Learning addresses this challenge directly. By training a joint model across
+          HDB, LTA, housing‐developers, and Grab without exposing raw datasets, each organization
+          can contribute valuable features (e.g., entry/exit logs, mobility patterns,
+          housing‐occupancy rates) in a privacy‐preserving manner. The coordinating server
+          aggregates these parameter updates and redistributes an enhanced global model, ensuring
+          that no sensitive data ever leaves a participant’s secure environment. As a result, the
+          final model can accurately predict parking demand at a local (estate) level—capturing
+          both national “surplus” data and local “shortage” dynamics—while fully respecting each
+          organization’s privacy constraints.
         </p>
+                </br>
+            <img src="res/img/model_train.png" alt="fl_model_training" />
+                  </br>
         <p>
-          Feel free to experiment with different client setups by toggling <strong>LTA</strong>, <strong>HDB Housing</strong>, and <strong>Grab</strong> in the Controls panel. Each combination represents a distinct federated configuration—observe how the global Test MSE and individual Client Contributions change as you include or exclude specific partners across your selected repetitions.
+          Feel free to experiment with different client setups by toggling
+          <strong>LTA</strong>, <strong>HDB Housing</strong>, and <strong>Grab</strong> in the
+          Controls panel. Each combination represents a distinct federated configuration—observe
+          how the global Test MSE and individual Client Contributions change as you include or
+          exclude specific partners across your selected repetitions.
         </p>
-      </div>
-
-      <!-- Experiment Card -->
-      <div id="experiment" class="card">
-        <h3>Federated Learning Experiment Metrics</h3>
-        
-        <!-- Introduction paragraph for all metrics -->
-        <div class="metric-selector">
-          <p class="intro">
-            Below are three key metrics to help non‐technical stakeholders understand model performance:
-            <ul>
-              <li><strong>Training Loss:</strong> Indicates how well the model fits the data it was trained on. Lower values signify better fit.</li>
-              <li><strong>Test MSE:</strong> Measures prediction error on unseen data. Lower values mean the model generalizes more accurately.</li>
-              <li><strong>Client Contribution:</strong> Illustrates the relative impact each participant (HDB Carpark, LTA, HDB Housing, Grab) has on overall model performance. Larger values indicate greater contribution.</li>
-            </ul>
-          </p>
-          <label for="metricSelect">Select Metric:</label>
-          <select id="metricSelect">
-            <option value="trainingLoss">Training Loss</option>
-            <option value="testMSE">Test MSE</option>
-            <option value="contrib">Client Contribution</option>
-          </select>
-          <p id="metricDescription" class="metric-description">
-            Shows how well the model is fitting the training data; lower values indicate a better fit.
-          </p>
-        </div>
-
-        <!-- Containers for each chart; only one is visible at a time -->
-        <div id="trainingLossContainer" class="metric-container active">
-          <div class="chart-container">
-            <canvas id="trainingLossChart"></canvas>
-          </div>
-        </div>
-        <div id="testMSEContainer" class="metric-container">
-          <div class="chart-container">
-            <canvas id="testMSEChart"></canvas>
-          </div>
-        </div>
-        <div id="contribContainer" class="metric-container">
-          <div class="chart-container">
-            <canvas id="contribChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Comparison with Individual Machine Learning Card -->
-      <div id="comparison" class="card">
-        <h3>Comparison with Individual Machine Learning</h3>
-        <p class="description">
-          In this comparison, each client is provided with the ground‐truth parking demand to simulate full‐data performance (blue), and a centralized model (identical architecture) is trained on the same ground‐truth data. This highlights how individual data sources and a fully centralized approach perform relative to one another, helping us understand the potential gains from federated learning.
-        </p>
-        <div class="controls-inline">
-          <label for="indClientSelect">
-            Client:
-            <select id="indClientSelect">
-              <!-- Populated dynamically -->
-            </select>
-          </label>
-          <label for="indRepSelect">
-            Trial:
-            <select id="indRepSelect">
-              <!-- Populated dynamically -->
-            </select>
-          </label>
-        </div>
-        <div class="chart-container">
-          <canvas id="indivChart"></canvas>
-        </div>
       </div>
 
       <!-- Data Generation Card -->
-      <div id="data-generation" class="card">
-        <h3>Data Generation</h3>
-        <p>Details and scripts for generating the federated learning datasets will appear here.</p>
-      </div>
-    </section>
+<div id="data-generation" class="card">
+  <h3>Data Generation</h3>
+
+  <p>
+    We build a fully synthetic, yet realistic, parking-demand dataset by first creating
+    1 973 geospatial “centroids” across Singapore. Public postal-code records from
+    <em>data.gov.sg</em> are clustered via k-means (initially 2 000 clusters, trimmed
+    to remove non-land regions) and tagged with 2019 Master-Plan planning areas to form
+    our simulation grid. This ensures uniform spatial coverage while preserving real-world
+    geography.
+  </p>
+
+  <p>We next generate four core feature families per centroid:</p>
+  <ul>
+    <li>
+      <strong>Housing & Population:</strong>
+      Owner-occupied vs. rented household counts from the 2020 Census (Table 107) are
+      mapped to each centroid.
+    </li>
+    <li>
+      <strong>Carpark Slots:</strong>
+      2020 parking availability via Data.gov APIs, merged with 2025 HDB carpark locations.
+      Coordinates in SVY21 are converted to WGS84 and assigned to centroids via KD-Tree
+      nearest-neighbour lookup.
+    </li>
+    <li>
+      <strong>Resident Trips:</strong>
+      Using Census “car only” mode shares (Table 104), we sample trip start/end pairs
+      across centroids by cumulative-probability sampling proportional to car-usage rates.
+    </li>
+    <li>
+      <strong>Private-Hire Activity:</strong>
+      “Taxi & private hire” mode shares yield Grab-ride counts per planning area, then
+      distributed to centroids as above.
+    </li>
+  </ul>
+
+  <p>Finally, we compute a scalar “parking demand” per centroid by:</p>
+  <ol>
+    <li>Min–max normalizing each feature to [0, 1].</li>
+    <li>Applying human-tuned weights to reflect relative importance.</li>
+    <li>Summing the weighted features to a composite score.</li>
+    <li>Scaling to Singapore’s average occupancy (66.6 %), clipping negatives to 0.</li>
+    <li>Multiplying by total lots available to yield absolute parking slots demanded.</li>
+  </ol>
+
+  <p>
+    The resulting “ground-truth” time series drives our federated-learning experiments,
+    while preserving full compliance with PDPA and corporate privacy policies.
+  </p>
+</div>
+
+  <!-- Animated arrow pointing to Metrics page -->
+  <div class="navigate-metrics">
+      <p>
+Continue to view the metrics
+  </p>
+    <a href="metrics.html#experiment"
+       class="metrics-link"
+       aria-label="Go to Federated Learning Experiment">
+      &darr;
+    </a>
   </div>
 
-  <!-- External JS -->
-  <script src="script.js"></script>
+    </section>
+  </div>
 </body>
 </html>

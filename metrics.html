@@ -1,0 +1,129 @@
+<!-- metrics.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- REQUIRED for responsive scaling on mobile/desktop -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Federated Learning Dashboard – Metrics</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js and D3.js required for the charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+  <!-- Skip Link for Screen-Reader / Keyboard Users -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Top Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="res/img/SMU_logo.jpg" alt="SMU Logo" class="logo-img" />
+        <span>Singapore Management University</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="metrics.html#experiment">Federated Learning Experiment</a></li>
+        <li><a href="metrics.html#comparison">Comparison with Individual ML</a></li>
+        <li><a href="index.html#data-generation">Data Generation</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="main-content" id="main">
+    <!-- Sidebar: Controls (only on metrics page) -->
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar with filters">
+      <h2>Controls</h2>
+      <div id="controls">
+        <fieldset id="clientSelect">
+          <legend>Clients</legend>
+          <p class="host-label"><strong>HDB Carpark (Host)</strong> — always included</p>
+          <label><input type="checkbox" name="guest" value="guest_1" checked /> LTA</label>
+          <label><input type="checkbox" name="guest" value="guest_2" checked /> HDB Housing</label>
+          <label><input type="checkbox" name="guest" value="guest_3" checked /> Grab</label>
+        </fieldset>
+        <fieldset id="repSelect">
+          <legend>Repetitions</legend>
+          <label><input type="checkbox" name="rep" value="1" checked /> Rep 1</label>
+          <label><input type="checkbox" name="rep" value="2" /> Rep 2</label>
+          <!-- … through Rep 10 … -->
+          <label><input type="checkbox" name="rep" value="10" /> Rep 10</label>
+        </fieldset>
+      </div>
+    </aside>
+
+    <!-- Main Content Area (Metrics & Comparison) -->
+    <section class="content">
+      <!-- Federated Learning Experiment Metrics -->
+      <div id="experiment" class="card">
+        <h3>Federated Learning Experiment Metrics</h3>
+        <div class="metric-selector">
+          <p class="intro">
+            Below are three key metrics to help stakeholders understand model performance:
+          </p>
+          <ul>
+            <li><strong>Training Loss:</strong> How well the model fits its training data.</li>
+            <li><strong>Test MSE:</strong> Prediction error on unseen data.</li>
+            <li><strong>Client Contribution:</strong> Relative impact of each participant.</li>
+          </ul>
+          <label for="metricSelect">Select Metric:</label>
+          <select id="metricSelect">
+            <option value="trainingLoss">Training Loss</option>
+            <option value="testMSE">Test MSE</option>
+            <option value="contrib">Client Contribution</option>
+          </select>
+          <p id="metricDescription" class="metric-description">
+            Shows how well the model is fitting training data; lower indicates a better fit.
+          </p>
+        </div>
+        <div id="trainingLossContainer" class="metric-container active">
+          <div class="chart-wrapper">
+            <div class="spinner">Loading…</div>
+            <canvas id="trainingLossChart"></canvas>
+          </div>
+        </div>
+        <div id="testMSEContainer" class="metric-container">
+          <div class="chart-wrapper">
+            <div class="spinner">Loading…</div>
+            <canvas id="testMSEChart"></canvas>
+          </div>
+        </div>
+        <div id="contribContainer" class="metric-container">
+          <div class="chart-wrapper">
+            <div class="spinner">Loading…</div>
+            <canvas id="contribChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison with Individual Machine Learning -->
+      <div id="comparison" class="card">
+        <h3>Comparison with Individual Machine Learning</h3>
+        <p class="description">
+          Each client is provided with ground‐truth parking demand to simulate full‐data
+          performance (blue), alongside a centralized model trained on the same data.
+        </p>
+        <div class="controls-inline">
+          <label for="indClientSelect">
+            Client:
+            <select id="indClientSelect"></select>
+          </label>
+          <label for="indRepSelect">
+            Trial:
+            <select id="indRepSelect"></select>
+          </label>
+        </div>
+        <div class="chart-wrapper">
+          <div class="spinner">Loading…</div>
+          <canvas id="indivChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Main JavaScript (chart logic) -->
+  <script src="script.js"></script>
+</body>
+</html>
