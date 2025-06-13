@@ -340,3 +340,148 @@ nav {
     display: block;
   }
 }
+
+/* 1) Prevent nav‐links from wrapping awkwardly */
+.nav-links {
+  overflow-x: auto;            /* keep the scroll capability */
+  overflow-y: hidden;          /* no vertical scroll */
+  -ms-overflow-style: none;     /* IE & Edge */
+  scrollbar-width: none;        /* Firefox */
+}
+
+.nav-links::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Opera */
+}
+.nav-links a {
+  white-space: nowrap;        /* never break a link text across two lines */
+}
+
+/* 2) Scale down nav text at narrower widths (or high zooms) */
+@media (max-width: 1400px) {
+  .nav-links a {
+    font-size: 0.85rem;       /* slightly smaller labels */
+  }
+}
+@media (max-width: 1200px) {
+  .nav-links a {
+    font-size: 0.8rem;
+  }
+}
+
+/* 3) Collapse into “hamburger” below 1000px */
+@media (max-width: 1000px) {
+  .nav-links {
+    display: none;            /* hide the top‐level links */
+  }
+  .sidebar-toggle {
+    display: block;           /* show your ☰ button (you’ll need JS to toggle the sidebar) */
+  }
+}
+
+/* 4) Make figures fully fluid inside cards */
+.card figure {
+  width: 100%;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+.card figure img {
+  max-width: 100%;            /* always fit to its container */
+  height: auto;
+}
+.card figure figcaption {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+}
+
+/* 5) Ensure long paragraphs wrap nicely */
+.card p {
+  word-wrap: break-word;      /* catch any overly long string without spaces */
+}
+
+/* 6) Constrain overall page width and keep everything centered */
+.main-content {
+  max-width: 1400px;
+  margin: 60px auto 1rem;
+  padding: 0 1rem;
+}
+
+
+/* Mobile Off-Canvas Menu */
+.mobile-menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 2000;
+}
+.mobile-menu.show {
+  display: block;
+}
+.mobile-menu-content {
+  background: var(--sidebar-bg);
+  width: 80%;
+  max-width: 300px;
+  height: 100%;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* Close button */
+.mobile-menu-close {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  float: right;
+  cursor: pointer;
+}
+
+/* Links inside mobile menu */
+.mobile-nav-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+}
+.mobile-nav-links li {
+  margin-bottom: 1rem;
+}
+.mobile-nav-links a {
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: var(--text-color);
+}
+.mobile-nav-links a:hover {
+  color: var(--primary-color);
+}
+
+/* Style the sidebar controls in the mobile menu */
+.mobile-sidebar h2 {
+  font-size: 1.2rem;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+.mobile-sidebar fieldset {
+  margin-bottom: 1rem;
+}
+
+/* Show burger only on small screens */
+.sidebar-toggle {
+  display: none;   /* hidden by default */
+}
+@media (max-width: 900px) {
+  .nav-links,
+  .sidebar {
+    display: none; /* hide default nav and sidebar */
+  }
+  .sidebar-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    cursor: pointer;
+  }
+}
+

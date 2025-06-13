@@ -416,3 +416,4 @@ function setupIndividualComparison() {
   // Initial draw
   updateIndivChart();
 }
+
