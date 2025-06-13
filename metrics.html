@@ -50,7 +50,13 @@
           <legend>Repetitions</legend>
           <label><input type="checkbox" name="rep" value="1" checked /> Rep 1</label>
           <label><input type="checkbox" name="rep" value="2" /> Rep 2</label>
-          <!-- … through Rep 10 … -->
+          <label><input type="checkbox" name="rep" value="3" /> Rep 3</label>
+          <label><input type="checkbox" name="rep" value="4" /> Rep 4</label>
+          <label><input type="checkbox" name="rep" value="5" /> Rep 5</label>
+          <label><input type="checkbox" name="rep" value="6" /> Rep 6</label>
+          <label><input type="checkbox" name="rep" value="7" /> Rep 7</label>
+          <label><input type="checkbox" name="rep" value="8" /> Rep 8</label>
+          <label><input type="checkbox" name="rep" value="9" /> Rep 9</label>
           <label><input type="checkbox" name="rep" value="10" /> Rep 10</label>
         </fieldset>
       </div>
@@ -123,6 +129,60 @@
         </div>
       </div>
     </section>
+      <!-- Mobile Off-Canvas Menu -->
+<!-- Mobile Off-Canvas Menu -->
+<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-content" role="dialog" aria-modal="true">
+    <button id="mobile-menu-close"
+            class="mobile-menu-close"
+            aria-label="Close menu">&times;</button>
+
+    <!-- Section Links -->
+    <ul class="mobile-nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="metrics.html#experiment">Federated Learning Experiment</a></li>
+      <li><a href="metrics.html#comparison">Comparison with Individual ML</a></li>
+      <li><a href="index.html#data-generation">Data Generation</a></li>
+    </ul>
+
+    <!-- Sidebar Controls -->
+    <h2>Controls</h2>
+    <div id="controls">
+      <fieldset id="clientSelect">
+        <legend>Clients</legend>
+        <p class="host-label"><strong>HDB Carpark (Host)</strong> — always included</p>
+        <label>
+          <input type="checkbox" name="guest" value="guest_1" checked />
+          LTA
+        </label>
+        <label>
+          <input type="checkbox" name="guest" value="guest_2" checked />
+          HDB Housing
+        </label>
+        <label>
+          <input type="checkbox" name="guest" value="guest_3" checked />
+          Grab
+        </label>
+      </fieldset>
+
+      <fieldset id="repSelect">
+        <legend>Repetitions</legend>
+        <label><input type="checkbox" name="rep" value="1" checked /> Rep 1</label>
+        <label><input type="checkbox" name="rep" value="2" /> Rep 2</label>
+        <label><input type="checkbox" name="rep" value="3" /> Rep 3</label>
+        <label><input type="checkbox" name="rep" value="4" /> Rep 4</label>
+        <label><input type="checkbox" name="rep" value="5" /> Rep 5</label>
+        <label><input type="checkbox" name="rep" value="6" /> Rep 6</label>
+        <label><input type="checkbox" name="rep" value="7" /> Rep 7</label>
+        <label><input type="checkbox" name="rep" value="8" /> Rep 8</label>
+        <label><input type="checkbox" name="rep" value="9" /> Rep 9</label>
+        <label><input type="checkbox" name="rep" value="10" /> Rep 10</label>
+      </fieldset>
+    </div>
+  </div>
+</div>
+
+
   </div>
 
   <!-- Main JavaScript (chart logic) -->
